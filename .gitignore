@@ -1,0 +1,9 @@
+# CLion IDE configuration
+.idea/
+# Python virtual environment
+.venv
+.env
+# Build directories
+cmake-build-debug/
+cmake-build-release/
+build/
