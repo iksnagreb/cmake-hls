@@ -295,6 +295,9 @@ function(add_vitis_ip NAME)
         # Combine the Vitis HLS and SYCL source by linking to the library
         # targets above
         target_link_libraries(tb_${NAME} ${NAME})
+        # Forward all compiler options of the interface target to the testbench
+        # target
+        target_compile_options(tb_${NAME} PRIVATE ${CXX_FLAGS})
         # Custom target executing the compiled C++ simulation testbench
         add_custom_target(
             # Suffix indicating this is "C Simulation" of the design
@@ -303,6 +306,16 @@ function(add_vitis_ip NAME)
             COMMAND tb_${NAME}
             # Add some message before running the target
             COMMENT "[Testbench] C++ Simulation of ${NAME}"
+        )
+        # Register C++ Simulation testbenches as tests, so once CTest is
+        # included or enable_testing() is called the "test" target will run all
+        # testbenches
+        add_test(
+            # Name/Comment printed when the testbench is executed as a CTest
+            NAME "[${NAME}] C++ Simulation"
+            # Cannot directly invoke the target as it is not an executable, but
+            # this is possible with an indirection via CMake
+            COMMAND ${CMAKE_COMMAND} --build . --target tb_${NAME}_csim
         )
         # Register C++/RTL simulation as a target executing the simulation flow
         # via the vitis-run command
@@ -324,6 +337,16 @@ function(add_vitis_ip NAME)
             VERBATIM
             # Add some message before running the target
             COMMENT "[Testbench] C++/RTL Co-Simulation of ${NAME}"
+        )
+        # Register C++/RTL Co-Simulation testbenches as tests, so once CTest is
+        # included or enable_testing() is called the "test" target will run all
+        # testbenches
+        add_test(
+            # Name/Comment printed when the testbench is executed as a CTest
+            NAME "[${NAME}] C++/RTL Co-Simulation"
+            # Cannot directly invoke the target as it is not an executable, but
+            # this is possible with an indirection via CMake
+            COMMAND ${CMAKE_COMMAND} --build . --target tb_${NAME}_cosim
         )
     endif()
 endfunction()
