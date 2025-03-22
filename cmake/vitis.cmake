@@ -15,6 +15,7 @@ set(VITIS_HLS_CONFIG_TEMPLATE
     "syn.file=$<JOIN:$<GENEX_EVAL:$<TARGET_PROPERTY:ABSOLUTE_SOURCES>>, >"
     "tb.cflags=$<JOIN:$<GENEX_EVAL:$<TARGET_PROPERTY:CXX_FLAGS>>, >"
     "tb.file=$<JOIN:$<GENEX_EVAL:$<TARGET_PROPERTY:ABSOLUTE_TESTBENCH>>, >"
+    "tb.file=$<JOIN:$<GENEX_EVAL:$<TARGET_PROPERTY:ABSOLUTE_SOURCES>>, >"
 )
 
 # Adds command line options to the Vitis HLS synthesis call
@@ -168,6 +169,15 @@ function(add_vitis_ip NAME)
     set(CXX_FLAGS "$<${PROPERTY},COMPILE_OPTIONS>;")
     # Add compile options marked as INTERFACE options for the target
     string(APPEND CXX_FLAGS "$<${PROPERTY},INTERFACE_COMPILE_OPTIONS>;")
+    # Collect list of compile definitions
+    set(DEFINITIONS "$<${PROPERTY},COMPILE_DEFINITIONS>")
+    # Add compile definitions
+    string(APPEND CXX_FLAGS "$<LIST:TRANSFORM,${DEFINITIONS},PREPEND,-D>;")
+    # Collect list of compile definitions marked as INTERFACE options for the
+    # target
+    set(DEFINITIONS "$<${PROPERTY},INTERFACE_COMPILE_DEFINITIONS>")
+    # Add compile definitions
+    string(APPEND CXX_FLAGS "$<LIST:TRANSFORM,${DEFINITIONS},PREPEND,-D>;")
     # Collect the list of include search paths for the target
     set(INCLUDES "$<${PROPERTY},INCLUDE_DIRECTORIES>")
     # Add the include search path to the compiler command lines
@@ -190,7 +200,7 @@ function(add_vitis_ip NAME)
 
     # Collect testbench sources files, these are a TARGET_PROPERTY which can be
     # extended after adding the target.
-    set(TESTBENCH "$<${PROPERTY},TESTBENCH>")
+    set(TESTBENCH "$<GENEX_EVAL:$<${PROPERTY},TESTBENCH>>")
     # Input sources files must be expanded to absolute paths as the tools won't
     # find the relative to the build directory
     set(TESTBENCH "$<PATH:ABSOLUTE_PATH,${TESTBENCH},${SOURCE_DIR}>")
@@ -281,7 +291,7 @@ function(add_vitis_ip NAME)
     if(DEFINED ARGS_TESTBENCH)
         # Testbench executable combining all sources which should integrate well
         # with IDEs and uses the default C++ toolchain
-        add_executable(tb_${NAME} "$<${PROPERTY},TESTBENCH>")
+        add_executable(tb_${NAME} "$<GENEX_EVAL:$<${PROPERTY},TESTBENCH>>")
         # Combine the Vitis HLS and SYCL source by linking to the library
         # targets above
         target_link_libraries(tb_${NAME} ${NAME})
@@ -302,9 +312,12 @@ function(add_vitis_ip NAME)
             # Simulation is executed via the vitis-run command which should be
             # configured via the same configuration file already generated above
             COMMAND ${VITIS_RUN} --cosim ${CONFIG} --work_dir ${WORKDIR}
+            # @formatter:off
             # Depends on the design and testbench sources as well as the already
             # synthesized IP located in WORKDIR
-            DEPENDS $<${PROPERTY},SOURCES> $<${PROPERTY},TESTBENCH> ${WORKDIR}
+            DEPENDS $<GENEX_EVAL:$<${PROPERTY},TESTBENCH>>
+                $<${PROPERTY},SOURCES> ${WORKDIR}
+            # @formatter:on
             # Expand all list property as part of the command
             COMMAND_EXPAND_LISTS
             # Properly escape the command line
