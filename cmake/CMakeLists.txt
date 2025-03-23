@@ -17,7 +17,7 @@ set(CMAKE_HLS_VERSION_TWEAK ${CMAKE_HLS_VERSION_TWEAK} PARENT_SCOPE)
 
 # Composed version string following <major>[.<minor>[.<patch>[.<tweak>]]]
 string(APPEND CMAKE_HLS_VERSION "${CMAKE_HLS_VERSION_MAJOR}.")
-string(APPEND CMAKE_HLS_VERSION "${CMAKE_HLS_VERSION_MAJOR}.")
+string(APPEND CMAKE_HLS_VERSION "${CMAKE_HLS_VERSION_MINOR}.")
 string(APPEND CMAKE_HLS_VERSION "${CMAKE_HLS_VERSION_PATCH}.")
 string(APPEND CMAKE_HLS_VERSION "${CMAKE_HLS_VERSION_TWEAK}")
 # Export the full version string into the parent scope
