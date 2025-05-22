@@ -242,7 +242,7 @@ function(add_sycl_for_vitis_library NAME)
         DEPENDS ${NAME}.${STEPS}.xpirbc
         # The final pre-compiled and downgraded LLVM IR bitcode
         BYPRODUCTS ${NAME}.xpirbc
-        # Compy the selected output to the final output
+        # Copy the selected output to the final output
         COMMAND cp ${NAME}.${STEPS}.xpirbc ${NAME}.xpirbc
     )
 endfunction()
