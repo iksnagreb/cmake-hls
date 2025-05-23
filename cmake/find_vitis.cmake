@@ -58,14 +58,14 @@ if(NOT DEFINED XILINX_VITIS AND EXISTS ${VXX})
 endif()
 
 # Path to HLS SPIR library distributed with Vitis HLS
-find_file(SPIR libspir64-39-hls.bc PATHS ${XILINX_HLS}/lnx64/lib)
+find_file(SPIR libspir64-39-hls.bc PATHS ${XILINX_HLS}/lnx64/lib NO_CACHE)
 
 # If the SPIR library could not be found the derived path might be wrong
 if(NOT EXISTS ${SPIR})
     # Try again with HLS path the same as Vitis
     set(XILINX_HLS ${XILINX_VITIS})
     # Path to HLS SPIR library distributed with Vitis HLS
-    find_file(SPIR libspir64-39-hls.bc PATHS ${XILINX_HLS}/lnx64/lib)
+    find_file(SPIR libspir64-39-hls.bc PATHS ${XILINX_HLS}/lnx64/lib NO_CACHE)
 endif()
 
 # Path to Vitis HLS LLVM and clang binaries
