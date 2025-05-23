@@ -22,6 +22,10 @@ if(NOT DEFINED XILINX_HLS AND DEFINED XILINX_ROOT AND DEFINED XILINX_VERSION)
     set(XILINX_HLS "${XILINX_ROOT}/Vitis_HLS/${XILINX_VERSION}")
 endif()
 
+# Remove Vitis programs from cache to avoid issues when switching versions...
+unset(VXX CACHE)
+unset(VITIS_RUN CACHE)
+
 # Vitis HLS C++ compiler to synthesize and link the whole design and the
 # vitis-run command which can be used for running test benches
 find_program(VXX v++ PATHS ${XILINX_VITIS} ${XILINX_VITIS}/bin REQUIRED)
@@ -71,6 +75,12 @@ endif()
 # Path to Vitis HLS LLVM and clang binaries
 set(VITIS_LLVM_BIN "${XILINX_HLS}/lnx64/tools/clang-3.9-csynth/bin")
 
+# Remove Vitis programs from cache to avoid issues when switching versions...
+unset(VITIS_CLANG CACHE)
+unset(VITIS_LLVM_LINK CACHE)
+unset(VITIS_LLVM_AS CACHE)
+unset(VITIS_OPT CACHE)
+
 # Vitis HLS version of the clang C++ compiler
 find_program(VITIS_CLANG clang++ HINTS ${VITIS_LLVM_BIN} NO_DEFAULT_PATH)
 # Vitis version of the llvm-link linker command
@@ -100,7 +110,11 @@ endfunction()
 
 # Set the Vitis HLS include path
 if(${VITIS_FOUND})
+    # Expose the path to the Vitis HLS includes
     set(VITIS_INCLUDE ${XILINX_HLS}/include)
+    # Add Vitis HLS headers to the include search paths to make this available
+    # to any target
+    include_directories(${VITIS_INCLUDE})
 endif()
 
 # Status message reporting location and version of the Xilinx tools found

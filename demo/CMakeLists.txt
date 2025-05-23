@@ -1,8 +1,8 @@
 # Needs the Vitis HLS tools and custom targets
 include(vitis)
 
-# Has not been tested below 2022.2...
-vitis_minimum_required(VERSION 2022.2)
+# Platform argument does not work (or behaves differently?) below 2023.2
+vitis_minimum_required(VERSION 2023.2)
 
 # This demo project builds a simple adder kernel with Vitis HLS also adding C++
 # Simulation and C++/RTL Co-Simulation. Targets the Alveo U280 accelerator card.
