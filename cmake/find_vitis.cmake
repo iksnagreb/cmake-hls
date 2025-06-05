@@ -13,13 +13,26 @@ set(XILINX_VERSION $ENV{XILINX_VERSION})
 # If no explicit path to Vitis is given, but the root of the Xilinx tools and a
 # version string, try the most likely location
 if(NOT DEFINED XILINX_VITIS AND DEFINED XILINX_ROOT AND DEFINED XILINX_VERSION)
-    set(XILINX_VITIS "${XILINX_ROOT}/Vitis/${XILINX_VERSION}")
+    # Starting from 2025.1, the folder structure of the tools installation has
+    # been changed - grouping all tools under the version instead of having a
+    # version subdirectory per tool...
+    if(${XILINX_VERSION} VERSION_GREATER_EQUAL "2025.1")
+        set(XILINX_VITIS "${XILINX_ROOT}/${XILINX_VERSION}/Vitis")
+    else()
+        set(XILINX_VITIS "${XILINX_ROOT}/Vitis/${XILINX_VERSION}")
+    endif()
 endif()
 
 # If no explicit path to Vitis HLS is given, but the root of the Xilinx tools
 # and a  version string, try the most likely location
 if(NOT DEFINED XILINX_HLS AND DEFINED XILINX_ROOT AND DEFINED XILINX_VERSION)
-    set(XILINX_HLS "${XILINX_ROOT}/Vitis_HLS/${XILINX_VERSION}")
+    # Starting from 2025.1, the folder structure of the tools installation has
+    # been changed - HLS is integrated with AMD Vitis...
+    if(${XILINX_VERSION} VERSION_GREATER_EQUAL "2025.1")
+        set(XILINX_VITIS "${XILINX_ROOT}/${XILINX_VERSION}/Vitis")
+    else()
+        set(XILINX_HLS "${XILINX_ROOT}/Vitis_HLS/${XILINX_VERSION}")
+    endif()
 endif()
 
 # Remove Vitis programs from cache to avoid issues when switching versions...
@@ -46,8 +59,18 @@ if(NOT DEFINED XILINX_VITIS AND EXISTS ${VXX})
     # installation, just revert back from a list to a proper path string
     string(REPLACE ";" "/" XILINX_VITIS "${TMP}")
 
-    # Strip the last two components, which should be Vitis/${XILINX_VERSION}, to
-    # get to the root of the Xilinx tools installations
+    # Starting from 2025.1, the folder structure of the tools installation has
+    # been changed - grouping all tools under the version instead of having a
+    # version subdirectory per tool...
+    if(${XILINX_VERSION} STREQUAL "Vitis")
+        # Xilinx tools version string should then be the second to last
+        # component which can be extracted from the list
+        list(GET TMP -2 XILINX_VERSION)
+    endif()
+
+    # Strip the last two components, which should be Vitis/${XILINX_VERSION} (or
+    # ${XILINX_VERSION}/Vitis), to get to the root of the Xilinx tools
+    # installations
     list(REMOVE_AT TMP -1)
     list(REMOVE_AT TMP -1)
     # Revert the installation root back from a list to a proper path string to
@@ -59,6 +82,25 @@ if(NOT DEFINED XILINX_VITIS AND EXISTS ${VXX})
     # Note: This changed with 2024.2 (2024.1?) to be just "Vitis", but this will
     # be detected and corrected when looking for the SPIR library below
     string(REPLACE ";" "/" XILINX_HLS "${TMP};Vitis_HLS;${XILINX_VERSION}")
+endif()
+
+# We might have a path to Vitis but still no version of the Xilinx tools...
+if(DEFINED XILINX_VITIS AND NOT DEFINED XILINX_VERSION)
+    # Try to extract the version from the end of the Vitis paths - where it
+    # should be before 2025.1...
+    string(REPLACE "/" ";" TMP "${XILINX_VITIS}")
+    # Xilinx tools version string should now be the last component which can be
+    # extracted from the list
+    list(GET TMP -1 XILINX_VERSION)
+
+    # Starting from 2025.1, the folder structure of the tools installation has
+    # been changed - grouping all tools under the version instead of having a
+    # version subdirectory per tool...
+    if(${XILINX_VERSION} STREQUAL "Vitis")
+        # Xilinx tools version string should then be the second to last
+        # component which can be extracted from the list
+        list(GET TMP -2 XILINX_VERSION)
+    endif()
 endif()
 
 # Path to HLS SPIR library distributed with Vitis HLS
