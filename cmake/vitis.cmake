@@ -120,9 +120,6 @@ function(add_vitis_ip NAME)
     # 3. Setup the target environment by adding properties, generating
     #   configuration and filling utility variables used by custom command below
     # ==========================================================================
-    # Add the Vitis HLS headers to the include search paths
-    target_include_directories(${NAME} PUBLIC ${VITIS_INCLUDE})
-
     # Enable the TESTBENCH property for this target which can be used to add
     # extra sources to the testbench
     target_enable_property(${NAME} TESTBENCH "${ARGS_TESTBENCH}")
@@ -292,9 +289,10 @@ function(add_vitis_ip NAME)
         # Testbench executable combining all sources which should integrate well
         # with IDEs and uses the default C++ toolchain
         add_executable(tb_${NAME} "$<GENEX_EVAL:$<${PROPERTY},TESTBENCH>>")
-        # Combine the Vitis HLS and SYCL source by linking to the library
-        # targets above
-        target_link_libraries(tb_${NAME} ${NAME})
+        # Add all Vitis IP sources to the testbench
+        target_sources(tb_${NAME} PRIVATE ${ARGS_SOURCES})
+        # Add the Vitis HLS headers to the include search paths of the testbench
+        target_include_directories(tb_${NAME} PUBLIC ${VITIS_INCLUDE})
         # Forward all compiler options of the interface target to the testbench
         # target
         target_compile_options(tb_${NAME} PRIVATE ${CXX_FLAGS})

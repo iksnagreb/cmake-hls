@@ -154,9 +154,6 @@ endfunction()
 if(${VITIS_FOUND})
     # Expose the path to the Vitis HLS includes
     set(VITIS_INCLUDE ${XILINX_HLS}/include)
-    # Add Vitis HLS headers to the include search paths to make this available
-    # to any target
-    include_directories(${VITIS_INCLUDE})
 endif()
 
 # Status message reporting location and version of the Xilinx tools found
