@@ -15,7 +15,7 @@ FetchContent_Declare(
     # URL to the project GitHub repository
     GIT_REPOSITORY  https://github.com/iksnagreb/cmake-hls.git
     # Select the git tag to be pulled - recommended to pin a commit hash
-    GIT_TAG         eebac22922bbe11f89e0fe310fbbdb470337c516
+    GIT_TAG         d648ebf749dc570331dfcabed64d39d824fa8ef2
     # Only include the CMake scripts/modules, without this the demo project will
     # be registered as build targets as well
     SOURCE_SUBDIR   cmake
