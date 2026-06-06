@@ -290,7 +290,7 @@ function(add_vitis_ip NAME)
         # with IDEs and uses the default C++ toolchain
         add_executable(tb_${NAME} "$<GENEX_EVAL:$<${PROPERTY},TESTBENCH>>")
         # Add all Vitis IP sources to the testbench
-        target_sources(tb_${NAME} PRIVATE ${ARGS_SOURCES})
+        target_sources(tb_${NAME} PUBLIC "$<GENEX_EVAL:$<${PROPERTY},SOURCES>>")
         # Add the Vitis HLS headers to the include search paths of the testbench
         target_include_directories(tb_${NAME} PUBLIC ${VITIS_INCLUDE})
         # Forward all compiler options of the interface target to the testbench
