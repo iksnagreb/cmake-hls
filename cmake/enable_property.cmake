@@ -1,3 +1,6 @@
+# Do not include twice as this seems to be messing with some path definitions
+include_guard()
+
 # Utility function which enables a property option for some target taking
 # optional arguments and values from variable PROPERTY to seed the property.
 function(target_enable_property NAME PROPERTY)

@@ -1,3 +1,6 @@
+# Do not include twice as this seems to be messing with some path definitions
+include_guard()
+
 # The minimum CMake version with sufficient support for list transformations
 cmake_minimum_required(VERSION 3.27)
 

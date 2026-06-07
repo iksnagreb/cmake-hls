@@ -1,3 +1,6 @@
+# Do not include twice as this seems to be messing with some path definitions
+include_guard()
+
 # Start looking for SYCL + Vitis HLS integration programs and libraries
 message(CHECK_START "Looking for SYCL for Vitis HLS")
 
